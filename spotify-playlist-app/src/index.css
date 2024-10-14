@@ -1,0 +1,13 @@
+/* 
+  The following three lines are using the `@tailwind` directive to inject 
+  the base, component, and utility styles from the Tailwind CSS framework 
+  into our stylesheet. This is a PostCSS plugin that allows us to write 
+  more concise and maintainable CSS code. 
+
+  Even though WebStorm is complaining about an "unknown at-rule", this is 
+  valid CSS and will be processed by PostCSS and Vite when we build our 
+  application. 
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
