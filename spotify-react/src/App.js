@@ -35,8 +35,19 @@ function App() {
   };
 
   const searchArtists = (e) => {
-    const {data} = async axios.get(`https://api.spotify.com/v1/search?q=${serchKey}&type=artist`)
+    const {data} = await axios.get(`https://api.spotify.com/v1/search`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        q: serchKey,
+        type: "artist",
+      },
+    });
+    console.log(data);
   };
+      }
+
 
   return (
     <div className="App">
