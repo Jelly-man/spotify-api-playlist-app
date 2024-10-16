@@ -1,6 +1,6 @@
-const SearchBar = ({ userName, onSearch, onLogout }) => {
+const SearchBar = ({ userName, onSearch, onLogout, onChange }) => {
   return (
-    <div className="bg-[#282c34] min-h-screen p-4">
+    <div className="bg-[#282c34] p-4">
       {/* Top Search Bar */}
       <div className="flex items-center justify-between mb-4">
         {/* Search Input and Submit Button */}
@@ -9,11 +9,11 @@ const SearchBar = ({ userName, onSearch, onLogout }) => {
             type="text"
             placeholder="Search..."
             className="p-2 w-80 rounded-md bg-[#121212] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1DB954]"
-            onChange={(e) => onSearch(e.target.value)}
+            onChange={onChange} // Ensure onChange is passed here
           />
           <button
             className="bg-[#1DB954] text-white py-2 px-4 rounded-md hover:bg-[#1ed760] transition"
-            onClick={() => alert("Search submitted")}
+            onClick={onSearch}
           >
             Submit
           </button>
