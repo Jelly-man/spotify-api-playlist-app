@@ -13,6 +13,8 @@ function App() {
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [tracks, setTracks] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [snapshotId, setSnapshotId] = useState(null);
 
   useEffect(() => {
     // Fetch playlists after login
@@ -32,7 +34,7 @@ function App() {
       },
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     return data.items; // Return the playlists
   };
 
@@ -46,7 +48,7 @@ function App() {
       }
     );
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     return data.items.map((item) => item.track); // Return the tracks
   };
 
@@ -63,7 +65,8 @@ function App() {
     }
 
     // Extract the snapshot_id from the selected playlist
-    const snapshotId = selectedPlaylist.snapshot_id;
+    const snapshot = selectedPlaylist.snapshot_id;
+    setSnapshotId(snapshot);
 
     try {
       // Make DELETE request to remove track from playlist
@@ -108,6 +111,50 @@ function App() {
     setTracks(playlistTracks);
   };
 
+  const handleAddToPlaylist = async (result, selectedPlaylist) => {
+    if (!selectedPlaylist) {
+      console.error("No selected playlist");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/playlists/${selectedPlaylist}/tracks`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            uris: [`spotify:track:${result.trackId}`], // Ensure the format is correct
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Track added to playlist");
+        const updatedPlaylist = await fetchPlaylistTracks(
+          selectedPlaylist,
+          token
+        );
+        const selectedPlaylistData = playlists.find(
+          (playlist) => playlist.id === selectedPlaylist
+        );
+        if (selectedPlaylistData) {
+          setSnapshotId(selectedPlaylistData.snapshot_id); // Update the snapshot_id
+        }
+        setTracks(updatedPlaylist);
+
+        // Optionally, you can fetch the updated playlist tracks
+      } else {
+        console.error("Failed to add track to playlist");
+      }
+    } catch (error) {
+      console.error("Error adding track to playlist:", error);
+    }
+  };
+
   useEffect(() => {
     const hash = window.location.hash;
     let token = window.localStorage.getItem("token");
@@ -134,6 +181,8 @@ function App() {
 
   const handleSearch = async () => {
     if (!query) return;
+    setResults([]);
+    setSearchResults([]);
 
     const endpoint = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
       query
@@ -155,7 +204,16 @@ function App() {
       const data = await response.json();
       // Update results with the search data
       setResults(data);
-      console.log(results);
+
+      const processedResults = data.tracks.items.map((item) => ({
+        trackId: item.id,
+        trackName: item.name,
+        artistName: item.artists[0].name, // Use [0] to get the first artist's name
+        albumImage: item.album.images[0].url, // Use the first image URL
+      }));
+
+      setSearchResults(processedResults);
+      console.log(searchResults);
       // console.log(data); // For debugging purposes
     } catch (error) {
       console.error("Error fetching search results:", error);
@@ -196,7 +254,11 @@ function App() {
 
             {/* Optionally, add a space for rendering search results on the right */}
             <div className="flex-grow ml-4">
-              <SearchResults results={results} />
+              <SearchResults
+                results={searchResults}
+                onAddToPlaylist={handleAddToPlaylist}
+                selectedPlaylist={selectedPlaylist}
+              />
               {/* This div can be used for other content */}
               {/* Render search results cards here */}
             </div>
@@ -206,4 +268,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
