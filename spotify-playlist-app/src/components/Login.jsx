@@ -1,6 +1,6 @@
 import React from "react";
 
-const Login = () => {
+const Login = ({ onLogout }) => {
   const CLIENT_ID = "eb82c29294d44011b47fb33caf36a1d6";
   const REDIRECT_URI = "http://localhost:3000";
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
@@ -25,10 +25,11 @@ const Login = () => {
         Spotify Playlist Creator
       </h1>
       <a
-        href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}
+        href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=playlist-modify-public playlist-modify-private`}
       >
         Login
       </a>
+      <button onClick={onLogout}>Logout</button>
     </div>
   );
 };

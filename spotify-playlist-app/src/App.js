@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import { useEffect, useState } from "react";
 import SearchBar from "./components/SearchBar";
 import Sidebar from "./components/Sidebar";
+import SearchResults from "./components/SearchResults";
 
 function App() {
   const [token, setToken] = useState("");
@@ -45,12 +46,60 @@ function App() {
       }
     );
     const data = await response.json();
+    console.log(data);
     return data.items.map((item) => item.track); // Return the tracks
   };
 
-  const handleDeleteTrack = async (trackId) => {
-    // Implement the API call to delete the track from the playlist
-    // You'll need to include logic for deleting tracks and refresh the playlist
+  const handleDeleteTrack = async (trackId, selectedPlaylistId) => {
+    // Find the selected playlist from the playlists array
+    const selectedPlaylist = playlists.find(
+      (playlist) => playlist.id === selectedPlaylistId
+    );
+
+    // Handle case where selected playlist is not found
+    if (!selectedPlaylist) {
+      console.error("Selected playlist not found");
+      return;
+    }
+
+    // Extract the snapshot_id from the selected playlist
+    const snapshotId = selectedPlaylist.snapshot_id;
+
+    try {
+      // Make DELETE request to remove track from playlist
+      const response = await fetch(
+        `https://api.spotify.com/v1/playlists/${selectedPlaylist.id}/tracks`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`, // Replace with your valid token
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            tracks: [
+              {
+                uri: `spotify:track:${trackId}`, // Track URI format
+              },
+            ],
+            snapshot_id: snapshotId, // Include the snapshot_id
+          }),
+        }
+      );
+
+      // Check if response is successful
+      if (!response.ok) {
+        throw new Error("Failed to delete track from playlist");
+      }
+
+      // Fetch updated playlist tracks after successful deletion
+      const updatedPlaylistTracks = await fetchPlaylistTracks(
+        selectedPlaylist.id,
+        token
+      );
+      setTracks(updatedPlaylistTracks); // Update tracks in the UI
+    } catch (error) {
+      console.error("Error deleting track:", error);
+    }
   };
 
   const handlePlaylistChange = async (playlistId) => {
@@ -120,7 +169,10 @@ function App() {
   return (
     <div className="App min-h-screen flex flex-col">
       {!token ? (
-        <Login className="bg-[#282c34] min-h-screen flex flex-col items-center justify-center text-white text-[calc(10px+2vmin)]" />
+        <Login
+          onLogout={handleLogout}
+          className="bg-[#282c34] min-h-screen flex flex-col items-center justify-center text-white text-[calc(10px+2vmin)]"
+        />
       ) : (
         <>
           {/* Search Bar */}
@@ -132,7 +184,7 @@ function App() {
           />
 
           {/* Main Container for Playlists and Songs */}
-          <div className="flex flex-grow p-4">
+          <div className="flex flex-grow p-4 bg-[#ECDFCC]">
             {/* Sidebar for Playlist Dropdown and Songs */}
             <Sidebar
               playlists={playlists}
@@ -144,7 +196,7 @@ function App() {
 
             {/* Optionally, add a space for rendering search results on the right */}
             <div className="flex-grow ml-4">
-              {" "}
+              <SearchResults results={results} />
               {/* This div can be used for other content */}
               {/* Render search results cards here */}
             </div>
