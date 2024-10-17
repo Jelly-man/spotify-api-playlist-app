@@ -10,6 +10,7 @@ const SearchBar = ({ userName, onSearch, onLogout, onChange }) => {
             placeholder="Search..."
             className="p-2 w-80 rounded-md bg-[#121212] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1DB954]"
             onChange={onChange} // Ensure onChange is passed here
+            onKeyDown={(e) => e.key === "Enter" && onSearch()}
           />
           <button
             className="bg-[#1DB954] text-white py-2 px-4 rounded-md hover:bg-[#1ed760] transition"

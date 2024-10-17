@@ -15,6 +15,7 @@ function App() {
   const [tracks, setTracks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [snapshotId, setSnapshotId] = useState(null);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     // Fetch playlists after login
@@ -25,6 +26,18 @@ function App() {
       }
     };
     getPlaylists();
+    const getUserName = async () => {
+      if (token) {
+        const response = await fetch("https://api.spotify.com/v1/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setUserName(data.display_name);
+      }
+    };
+    getUserName();
   }, [token]);
 
   const fetchPlaylists = async (token) => {
@@ -235,7 +248,7 @@ function App() {
         <>
           {/* Search Bar */}
           <SearchBar
-            userName="John Doe"
+            userName={userName}
             onChange={handleInputChange}
             onSearch={handleSearch}
             onLogout={handleLogout}
