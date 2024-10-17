@@ -9,7 +9,6 @@ import SearchResults from "./components/SearchResults";
 function App() {
   const [token, setToken] = useState("");
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [tracks, setTracks] = useState([]);
@@ -194,7 +193,7 @@ function App() {
 
   const handleSearch = async () => {
     if (!query) return;
-    setResults([]);
+
     setSearchResults([]);
 
     const endpoint = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
@@ -216,7 +215,6 @@ function App() {
 
       const data = await response.json();
       // Update results with the search data
-      setResults(data);
 
       const processedResults = data.tracks.items.map((item) => ({
         trackId: item.id,
