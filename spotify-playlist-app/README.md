@@ -17,11 +17,15 @@ This project is a React web application that integrates with the Spotify API to 
 - Handles Spotify authentication via OAuth.
 - Redirects the user to the login page if they are not authenticated.
 
+![Alt text](./public/Login-screenshot.png "Login")
+
 ### 2. **SearchBar**
 
 - Allows the user to search for tracks via the Spotify API.
 - Displays the current logged-in user's Spotify username.
 - Contains a logout button to clear the token and log out.
+
+![Alt text](./public/SearchBar-SideBar-PLaylistSelect.png "SearchBar")
 
 ### 3. **Sidebar**
 
@@ -29,10 +33,14 @@ This project is a React web application that integrates with the Spotify API to 
 - Allows the user to switch between playlists and view their contents.
 - Provides the option to delete tracks from a selected playlist.
 
+![Alt text](./public/PlaylistSelect-Songs.png "SideBar")
+
 ### 4. **SearchResults**
 
 - Displays search results in a list with track name, artist, and album image.
 - Allows the user to add a track to the selected playlist.
+
+![Alt text](./public/SearchResults.png "SearchResults")
 
 ## Installation
 
