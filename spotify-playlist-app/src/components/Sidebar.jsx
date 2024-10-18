@@ -6,7 +6,7 @@ const Sidebar = ({
   onDeleteTrack,
 }) => {
   return (
-    <div className="bg-gray-800 text-white w-48 p-4 h-screen flex-shrink-0">
+    <div className="bg-gray-800 text-white w-48 p-4 flex-shrink-0">
       <h2 className="text-lg font-bold">Playlists</h2>
       <select
         className="bg-gray-700 text-white p-2 rounded mb-4 w-full"
